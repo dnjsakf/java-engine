@@ -1,10 +1,13 @@
-package com.dochi.labs.sch.launcher;
+package com.dochi.labs.sch.job;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -17,17 +20,17 @@ import org.slf4j.LoggerFactory;
 
 import com.dochi.labs.sch.SampleManager;
 
-public class CronJobLauncher extends SampleJobLauncher {
+public class CronJob extends SampleJob {
     
-    private final Logger LOGGER = LoggerFactory.getLogger(CronJobLauncher.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(CronJob.class);
 
-    public CronJobLauncher(String name, String crontab, Class<? extends Job> jobClass) {
-        this(name, crontab, jobClass, DEFAULT_GROUP);
+    public CronJob(String name, String schedule, Class<? extends Job> jobClass) {
+        this(name, schedule, jobClass, DEFAULT_GROUP);
     }
     
-    public CronJobLauncher(String name, String crontab, Class<? extends Job> jobClass, String group) {
+    public CronJob(String name, String schedule, Class<? extends Job> jobClass, String group) {
         this.name = name;
-        this.crontab = crontab;
+        this.schedule = schedule;
         this.jobClass = jobClass;
         this.group = group;
     }
@@ -37,10 +40,12 @@ public class CronJobLauncher extends SampleJobLauncher {
         Scheduler scheduler = factory.getScheduler();
         
         JobDetail job = createJob();
+        
         String name = String.format("%s_%s", PREFIX_TRIGGER_KEY, this.name);
         String group = String.format("%s_%s", PREFIX_TRIGGER_KEY, this.group);
         
-        CronScheduleBuilder schedule = CronScheduleBuilder.cronSchedule(new CronExpression(this.crontab));
+        CronExpression crontab = new CronExpression(this.schedule);
+        CronScheduleBuilder schedule = CronScheduleBuilder.cronSchedule(crontab);
         
         TriggerKey key = new TriggerKey(name, group);
         Trigger trigger = TriggerBuilder.newTrigger()
@@ -48,6 +53,10 @@ public class CronJobLauncher extends SampleJobLauncher {
                             .withIdentity(key)
                             .withSchedule(schedule)
                             .build();
+
+        JobDataMap jobDataMap = job.getJobDataMap();
+        jobDataMap.put("started", new SimpleDateFormat("yyyyMMddhhmmss.SSSS").format(new Date()));
+        jobDataMap.put("crontab", crontab);
         
         this.scheduleTime = scheduler.scheduleJob(job, trigger);
         scheduler.start();

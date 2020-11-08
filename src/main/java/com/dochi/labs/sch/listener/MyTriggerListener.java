@@ -1,6 +1,8 @@
-package com.dochi.labs.sch.listeners;
+package com.dochi.labs.sch.listener;
 
 import org.quartz.JobExecutionContext;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.Trigger.CompletedExecutionInstruction;
 import org.quartz.TriggerListener;
@@ -16,7 +18,7 @@ public class MyTriggerListener implements TriggerListener {
     }
 
     public void triggerFired(Trigger trigger, JobExecutionContext context) {
-        LOGGER.info("{} trigger is fired", trigger.getKey());
+    	LOGGER.info("{} trigger is fired, next: {}", trigger.getKey());
     }
 
     public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {

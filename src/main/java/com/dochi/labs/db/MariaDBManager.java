@@ -25,7 +25,7 @@ public class MariaDBManager {
     
     public MariaDBManager(){
         this.url = "jdbc:mariadb://localhost:3306";
-        this.database = "dochi_dev";
+        this.database = "DOCHI";
         this.username = "dochi";
         this.password = "dochi";
     }

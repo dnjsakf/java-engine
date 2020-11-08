@@ -1,4 +1,4 @@
-package com.dochi.labs.sch.launcher;
+package com.dochi.labs.sch.job;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -16,15 +16,15 @@ import org.slf4j.LoggerFactory;
 
 import com.dochi.labs.sch.SampleManager;
 
-public class OnceJobLauncher extends SampleJobLauncher {
+public class OnceJob extends SampleJob {
     
-    private final Logger LOGGER = LoggerFactory.getLogger(OnceJobLauncher.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(OnceJob.class);
 
-    public OnceJobLauncher(String name, Date startDate, Class<? extends Job> jobClass) {
+    public OnceJob(String name, Date startDate, Class<? extends Job> jobClass) {
         this(name, startDate, jobClass, DEFAULT_GROUP);
     }
     
-    public OnceJobLauncher(String name, Date startDate, Class<? extends Job> jobClass, String group) {
+    public OnceJob(String name, Date startDate, Class<? extends Job> jobClass, String group) {
         this.name = name;
         this.startDate = startDate;
         this.jobClass = jobClass;

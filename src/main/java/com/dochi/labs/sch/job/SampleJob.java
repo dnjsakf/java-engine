@@ -1,4 +1,4 @@
-package com.dochi.labs.sch.launcher;
+package com.dochi.labs.sch.job;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import com.dochi.labs.sch.SampleManager;
 
-public abstract class SampleJobLauncher {
+public abstract class SampleJob {
     
-    private final Logger LOGGER = LoggerFactory.getLogger(SampleJobLauncher.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SampleJob.class);
     
     protected final static String PREFIX_JOB_KEY = "JOB";
     protected final static String PREFIX_TRIGGER_KEY = "TRIGGER";
@@ -32,19 +32,19 @@ public abstract class SampleJobLauncher {
     
     protected String name = null;
     protected String group = null;
-    protected String crontab = null;
+    protected String schedule = null;
     protected Date startDate = null;
     protected Date scheduleTime = null;
     
     protected Class<? extends Job> jobClass = null;
     protected Map<String, Object> params = new HashMap<String,  Object>();
     
-    public SampleJobLauncher setParams(Map<String, Object> params) {
+    public SampleJob setParams(Map<String, Object> params) {
         this.params.putAll(params);
         
         return this;
     }
-    public SampleJobLauncher setParam(String key, Object value) {
+    public SampleJob setParam(String key, Object value) {
         this.params.put(key, value);
         
         return this;
@@ -66,7 +66,7 @@ public abstract class SampleJobLauncher {
         JobDataMap jobDataMap = job.getJobDataMap();
         jobDataMap.put("group", group);
         jobDataMap.put("name", name);
-        jobDataMap.put("started", new SimpleDateFormat("yyyyMMddhhmmss.SSSS").format(new Date()));
+        jobDataMap.put("created", new SimpleDateFormat("yyyyMMddhhmmss.SSSS").format(new Date()));
         
         if( params != null && params.size() > 0 ) {
             jobDataMap.putAll(params);
@@ -74,7 +74,10 @@ public abstract class SampleJobLauncher {
         
         return job;
     }
-    
+
+    /**
+     * Job 스케줄 실행
+     */
     public abstract void start() throws SchedulerException, ParseException;
 
     /**

@@ -1,4 +1,4 @@
-package com.dochi.labs.sch.listeners;
+package com.dochi.labs.sch.listener;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

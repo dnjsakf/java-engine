@@ -8,22 +8,22 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
-import com.dochi.labs.sch.launcher.SampleJobLauncher;
-import com.dochi.labs.sch.listeners.MyScheduleListener;
-import com.dochi.labs.sch.listeners.MyTriggerListener;
+import com.dochi.labs.sch.job.SampleJob;
+import com.dochi.labs.sch.listener.MyScheduleListener;
+import com.dochi.labs.sch.listener.MyTriggerListener;
 
 public class SampleManager {
     
     public static SchedulerFactory schdedulerFactory = null;
     public final String PROPS_PATH = "quartz/quartz.properties";
     
-    private Vector<SampleJobLauncher> jobs = new Vector<SampleJobLauncher>();
+    private Vector<SampleJob> jobs = new Vector<SampleJob>();
     
     public SampleManager() throws SchedulerException {
         SampleManager.setSchedulerFactory(new StdSchedulerFactory(PROPS_PATH));
     }
     
-    public void addJob(SampleJobLauncher job) {
+    public void addJob(SampleJob job) {
         jobs.add(job);
     }
     public void startJobs() {
