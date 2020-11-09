@@ -141,6 +141,7 @@ public class ScheduleJobExecutor implements Job {
 				if( JOB_TYPES.ONCE == jobType ) {
 					
 				} else if( JOB_TYPES.MULTIPLE == jobType ) {
+					
 				}
 				
 				// 스케줄 실행 일자/시간 생성 
