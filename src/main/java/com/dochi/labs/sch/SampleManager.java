@@ -9,7 +9,7 @@ import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
 import com.dochi.labs.sch.job.SampleJob;
-import com.dochi.labs.sch.listener.MyScheduleListener;
+import com.dochi.labs.sch.listener.MyJobListener;
 import com.dochi.labs.sch.listener.MyTriggerListener;
 
 public class SampleManager {
@@ -39,7 +39,7 @@ public class SampleManager {
     public boolean start() throws SchedulerException {
         Scheduler scheduler = SampleManager.getSchedulerFactory().getScheduler();
         
-        scheduler.getListenerManager().addJobListener(new MyScheduleListener());
+        scheduler.getListenerManager().addJobListener(new MyJobListener());
         scheduler.getListenerManager().addTriggerListener(new MyTriggerListener());
         scheduler.start();
         

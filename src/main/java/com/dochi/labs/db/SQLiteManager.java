@@ -19,9 +19,12 @@ public class SQLiteManager {
     private String url = null;
     
     public SQLiteManager(){
-        this.url = "jdbc:sqlite:src/main/resources/sqlite/chinook.db";
+        this.url = "jdbc:sqlite:src/main/resources/sqlite/quartz.db";
     }
     
+    /**
+     * 연결
+     */
     public void createConnection() {
         LOGGER.info("[CREATE]");
         
@@ -41,6 +44,9 @@ public class SQLiteManager {
         }
     }
     
+    /**
+     * 종료
+     */
     public void closeConnection() {
         LOGGER.info("[CLOSE]");
         try {
@@ -54,6 +60,9 @@ public class SQLiteManager {
         }
     }
     
+    /**
+     * 재연결
+     */
     public void ensureConnection() {
         LOGGER.info("[ENSURE]");
         try {

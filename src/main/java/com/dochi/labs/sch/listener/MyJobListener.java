@@ -6,11 +6,11 @@ import org.quartz.JobListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MyScheduleListener implements JobListener{
-    private final Logger LOGGER = LoggerFactory.getLogger(MyScheduleListener.class);
+public class MyJobListener implements JobListener{
+    private final Logger LOGGER = LoggerFactory.getLogger(MyJobListener.class);
 
     public String getName() {
-        return MyScheduleListener.class.getName();
+        return MyJobListener.class.getName();
     }
 
     public void jobToBeExecuted(JobExecutionContext context) {

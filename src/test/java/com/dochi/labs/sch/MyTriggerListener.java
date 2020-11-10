@@ -1,4 +1,4 @@
-package com.dochi.labs;
+package com.dochi.labs.sch;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
