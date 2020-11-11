@@ -50,6 +50,25 @@
       <version>2.3.2</version>
     </dependency>
     <!-- For Scheduler -->
+    
+    
+    <!-- For Slack -->
+    <dependency>
+      <groupId>com.slack.api</groupId>
+      <artifactId>bolt</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.slack.api</groupId>
+      <artifactId>bolt-servlet</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.slack.api</groupId>
+      <artifactId>bolt-jetty</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <!-- For Slack -->
   
   
     <!-- For WebSocket -->
