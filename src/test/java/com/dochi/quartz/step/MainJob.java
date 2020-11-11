@@ -9,18 +9,18 @@ import org.quartz.UnableToInterruptJobException;
 
 
 public class MainJob implements InterruptableJob {
-    
+
     private Thread currentThread = null;
-    
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        String jobName = context.getJobDetail().getKey().getName();
-        
-        System.out.println(String.format("[%s][%s][%s] START", JobLauncher.TIMESTAMP_FMT.format(new Date()), this.getClass().getName(), jobName));
-        
         // 현재 Thread 저장
         this.currentThread = Thread.currentThread();
-        
+
+        String jobName = context.getJobDetail().getKey().getName();
+
+        System.out.println(String.format("[%s][%s][%s] START", JobLauncher.TIMESTAMP_FMT.format(new Date()), this.getClass().getName(), jobName));
+
         try {
             // 강제로 종료를 지연시키기
             for(int i=1; i<=5; i++) {
