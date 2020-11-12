@@ -65,6 +65,9 @@ public class JobLauncher {
         // Scheduler 객체 정의
         factory = new StdSchedulerFactory();
         scheduler = factory.getScheduler();
+        
+        // Listener 설정
+        scheduler.getListenerManager().addJobListener(new JobLogListener());
 
         // Scheduler 실행
         scheduler.start();

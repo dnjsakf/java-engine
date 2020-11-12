@@ -20,7 +20,7 @@ import com.dochi.quartz.step.JobLauncher;
 
 
 public class CrawlerJob implements InterruptableJob {
-
+    
     private Thread currentThread = null;
     private final String URL = "https://heodolf.tistory.com/";
 
@@ -28,11 +28,6 @@ public class CrawlerJob implements InterruptableJob {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // 현재 Thread 저장
         this.currentThread = Thread.currentThread();
-
-        System.out.println(String.format("[%s][%s][%s] START"
-                , JobLauncher.TIMESTAMP_FMT.format(new Date())
-                , this.getClass().getName()
-                , context.getJobDetail().getKey().getName()));
 
         // 페이지 정보 수집
         int startPage = 1;
@@ -48,10 +43,6 @@ public class CrawlerJob implements InterruptableJob {
                 , JobLauncher.TIMESTAMP_FMT.format(new Date())
                 , this.getClass().getName()
                 , postList.size()));
-        System.out.println(String.format("[%s][%s][%s] END"
-                , JobLauncher.TIMESTAMP_FMT.format(new Date())
-                , this.getClass().getName()
-                , context.getJobDetail().getKey().getName()));
     }
 
     @Override
