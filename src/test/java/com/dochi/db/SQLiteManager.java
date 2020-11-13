@@ -42,13 +42,17 @@ public class SQLiteManager {
     // DB 연결 함수
     public void createConnection() {
         try {
+            // Load JDBC Class
+            //   - 나중에 다른 Database를 적용하려면, 해당 JDBC를 Load
+            Class.forName("org.sqlite.JDBC");
+            
             // DB 연결 객체 생성
             this.conn = DriverManager.getConnection(this.url);
 
             // 자동 커밋 옵션 설정
             this.conn.setAutoCommit(AUTO_COMMIT);
             
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
     }
@@ -139,77 +143,6 @@ public class SQLiteManager {
         return success;
     }
     
-    // 데이터 삽입 함수
-    public int insert(Map<String, Object> dataMap) {
-        final String sql = "INSERT INTO CW_BLOG_ATCL_LIST ("+"\n"
-                   + "    BLOG_ID,                         "+"\n"
-                   + "    CATE_ID,                         "+"\n"
-                   + "    ATCL_ID,                         "+"\n"
-                   + "    URL,                             "+"\n"
-                   + "    TITLE,                           "+"\n"
-                   + "    WORK_YN,                         "+"\n"
-                   + "    REG_DTTM                         "+"\n"
-                   + ") VALUES (                           "+"\n"
-                   + "    ?,                               "+"\n"
-                   + "    ?,                               "+"\n"
-                   + "    ?,                               "+"\n"
-                   + "    ?,                               "+"\n"
-                   + "    ?,                               "+"\n"
-                   + "    ?,                               "+"\n"
-                   + "    ?                                "+"\n"
-                   + ")";
-        
-        // 변수설정
-        //   - Database 변수
-        Connection _conn = ensureConnection();
-        PreparedStatement pstmt = null;
-        
-        //   - 입력 결과 변수
-        int inserted = 0;
-        
-        try {
-            // PreparedStatement 생성
-            pstmt = _conn.prepareStatement(sql);
-            
-            // 입력 데이터 매핑
-            pstmt.setObject(1, dataMap.get("BLOG_ID"));
-            pstmt.setObject(2, dataMap.get("CATE_ID"));
-            pstmt.setObject(3, dataMap.get("ATCL_ID"));
-            pstmt.setObject(4, dataMap.get("URL"));
-            pstmt.setObject(5, dataMap.get("TITLE"));
-            pstmt.setObject(6, dataMap.get("WORK_YN"));
-            pstmt.setObject(7, DATETIME_FMT.format(new Date()));
-            
-            // 쿼리 실행
-            pstmt.executeUpdate();
-            
-            // COMMIT
-            this.conn.commit();
-
-            // 입력건수  조회
-            inserted = pstmt.getUpdateCount();
-            
-        } catch (SQLException e) {
-            // 오류처리
-            System.out.println(e.getMessage());
-            inserted = -1;
-
-        } finally {
-            // PreparedStatement 종료
-            if( pstmt != null ) {
-                try {
-                    pstmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        
-        // 결과 반환
-        //   - 입력된 데이터 건수
-        return inserted;
-    }
-    
     // 데이터 조회 함수
     public List<Map<String, Object>> select(Map<String, Object> dataMap){
         // 상수설정
@@ -293,6 +226,77 @@ public class SQLiteManager {
         // 결과 반환
         //   - 조회된 데이터 리스트
         return selected;
+    }
+    
+    // 데이터 삽입 함수
+    public int insert(Map<String, Object> dataMap) {
+        final String sql = "INSERT INTO CW_BLOG_ATCL_LIST ("+"\n"
+                   + "    BLOG_ID,                         "+"\n"
+                   + "    CATE_ID,                         "+"\n"
+                   + "    ATCL_ID,                         "+"\n"
+                   + "    URL,                             "+"\n"
+                   + "    TITLE,                           "+"\n"
+                   + "    WORK_YN,                         "+"\n"
+                   + "    REG_DTTM                         "+"\n"
+                   + ") VALUES (                           "+"\n"
+                   + "    ?,                               "+"\n"
+                   + "    ?,                               "+"\n"
+                   + "    ?,                               "+"\n"
+                   + "    ?,                               "+"\n"
+                   + "    ?,                               "+"\n"
+                   + "    ?,                               "+"\n"
+                   + "    ?                                "+"\n"
+                   + ")";
+        
+        // 변수설정
+        //   - Database 변수
+        Connection _conn = ensureConnection();
+        PreparedStatement pstmt = null;
+        
+        //   - 입력 결과 변수
+        int inserted = 0;
+        
+        try {
+            // PreparedStatement 생성
+            pstmt = _conn.prepareStatement(sql);
+            
+            // 입력 데이터 매핑
+            pstmt.setObject(1, dataMap.get("BLOG_ID"));
+            pstmt.setObject(2, dataMap.get("CATE_ID"));
+            pstmt.setObject(3, dataMap.get("ATCL_ID"));
+            pstmt.setObject(4, dataMap.get("URL"));
+            pstmt.setObject(5, dataMap.get("TITLE"));
+            pstmt.setObject(6, dataMap.get("WORK_YN"));
+            pstmt.setObject(7, DATETIME_FMT.format(new Date()));
+            
+            // 쿼리 실행
+            pstmt.executeUpdate();
+            
+            // COMMIT
+            this.conn.commit();
+
+            // 입력건수  조회
+            inserted = pstmt.getUpdateCount();
+            
+        } catch (SQLException e) {
+            // 오류처리
+            System.out.println(e.getMessage());
+            inserted = -1;
+
+        } finally {
+            // PreparedStatement 종료
+            if( pstmt != null ) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        // 결과 반환
+        //   - 입력된 데이터 건수
+        return inserted;
     }
     
     // 데이터 수정 함수
