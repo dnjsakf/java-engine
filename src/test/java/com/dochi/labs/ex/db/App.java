@@ -1,27 +1,38 @@
-package com.dochi.db;
+package com.dochi.labs.ex.db;
 
 import java.sql.SQLException;
 
-import com.dochi.db.ex.DDLService;
-import com.dochi.db.ex.DDLService.ResultType;
+import com.dochi.labs.ex.db.DDLService.ResultType;
 
 public class App {
 
     // 변수 생성
     //   - DDL 객체 변수
-    private DDLService DDL = new DDLService("jdbc:sqlite::memory:");;
+    private DDLService DDL = null;
+
+    public App() {
+        // DDL 객체 for MariaDB
+        this.DDL = new DDLService(
+                "jdbc:mariadb://localhost:3306/dochi_dev",  // url
+                "dochi",                                    // username
+                "dochi"                                     // password
+            );
+
+        // DDL 객체 for SQLite
+        this.DDL = new DDLService("jdbc:sqlite:dochi.db");
+    }
 
     // 테이블 생성 함수
     public void createTable() throws SQLException {
         final String SQL = "CREATE TABLE IF NOT EXISTS CW_BLOG_ATCL_LIST (   "+"\n"
-                         + "  BLOG_ID     TEXT           UNIQUE,             "+"\n"
-                         + "  CATE_ID     TEXT           UNIQUE,             "+"\n"
-                         + "  ATCL_ID     TEXT           UNIQUE,             "+"\n"
-                         + "  URL         TEXT           NOT NULL,           "+"\n"
-                         + "  TITLE       TEXT,                              "+"\n"
+                         + "  BLOG_ID     VARCHAR        UNIQUE,             "+"\n"
+                         + "  CATE_ID     VARCHAR        UNIQUE,             "+"\n"
+                         + "  ATCL_ID     VARCHAR        UNIQUE,             "+"\n"
+                         + "  URL         VARCHAR        NOT NULL,           "+"\n"
+                         + "  TITLE       VARCHAR,                           "+"\n"
                          + "  WORK_YN     INTEGER        DEFAULT 0,          "+"\n"
-                         + "  REG_DTTM    TEXT,                              "+"\n"
-                         + "  UPD_DTTM    TEXT                               "+"\n"
+                         + "  REG_DTTM    VARCHAR,                           "+"\n"
+                         + "  UPD_DTTM    VARCHAR                            "+"\n"
                          + ")";
 
         ResultType result = DDL.createTable("CW_BLOG_ATCL_LIST", SQL);
@@ -64,8 +75,6 @@ public class App {
         // DB 연결 종료
         DDL.closeConnection();
     }
-    
-    
 
     public static void main(String[] args) throws SQLException {
         App sqlite = new App();
