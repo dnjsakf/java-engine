@@ -1,6 +1,7 @@
-package com.dochi.quartz.crawl;
+package com.dochi.quartz.crawl_db;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,13 +17,21 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
 
+import com.dochi.db.ex.DMLService;
 import com.dochi.quartz.step.JobLauncher;
 
 
 public class CrawlerJob implements InterruptableJob {
     
-    private Thread currentThread = null;
+	// 상수 설정
+	//   - 크롤링 대상 정보 변수
     private final String URL = "https://heodolf.tistory.com/";
+    private final String BLOG_ID = "heodolf.tistory.com";
+    private final String CATE_ID = "/";
+    
+    // 변수 설정
+    //   - 현재 실행중인 Thread 변수
+    private Thread currentThread = null;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -37,7 +46,13 @@ public class CrawlerJob implements InterruptableJob {
         List<Map<String, Object>> postList = new ArrayList<Map<String, Object>>();
         for(int page=endPage; page>=startPage; page--) {
             postList.addAll(getAritcleList(URL+"?page="+page));
+            
+            // 테스트용이므로 한번만 적재
+            break;
         }
+        
+        // 수집된 글목록 저장
+        saveAritcleList(postList);
 
         System.out.println(String.format("[%s][%s] - 조회 완료 ( %d건 )"
                 , JobLauncher.TIMESTAMP_FMT.format(new Date())
@@ -77,18 +92,21 @@ public class CrawlerJob implements InterruptableJob {
     }
 
     // 글목록을 가지고 오는 함수
-    private List<Map<String, Object>> getAritcleList(String url) {
+    private List<Map<String, Object>> getAritcleList(final String PAGE_URL) {
+    	// 상수설정
+    	//   - 결과변수
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         try {
             // 크롤링
-            Document document = Jsoup.connect(url).get();
+            Document document = Jsoup.connect(PAGE_URL).get();
 
             // 마지막 페이지를 가진 Element 탐색
             Elements elements = document.select("div.post-item");
 
             // 글목록 파싱
             elements.forEach((element)->{
+            	// 글목록 정보 Map 객체
                 Map<String, Object> postMap = new HashMap<String, Object>();
 
                 // Element 탐색
@@ -97,16 +115,17 @@ public class CrawlerJob implements InterruptableJob {
                 // 데이터 추출
                 String postId = child.attr("href");
                 String title = child.selectFirst("span.title").text();
-                String meta = child.selectFirst("span.meta").text();
-
+                
                 if( postId.startsWith("/") ) {
                     postId = postId.substring(1, postId.length());
                 }
-
+                
                 // 데이터 저장
-                postMap.put("url", URL+postId);
-                postMap.put("title", title);
-                postMap.put("meta", meta);
+                postMap.put("BLOG_ID", BLOG_ID);
+                postMap.put("CATE_ID", CATE_ID);
+                postMap.put("ATCL_ID", postId);
+                postMap.put("URL", URL+postId);
+                postMap.put("TITLE", title);
 
                 // 리스트에 추가
                 list.add(postMap);
@@ -116,8 +135,37 @@ public class CrawlerJob implements InterruptableJob {
 
         } catch (IOException e) {
             e.printStackTrace();
+            
         }
 
+        // 결과 반환
         return list;
+    }
+    
+    // 글목록을 저장하는 함수
+    public int saveAritcleList(List<Map<String, Object>> mapList) {
+		// 변수 설정
+		//   - Data Manage Service 객체
+        DMLService DML = new DMLService("jdbc:sqlite:quartz.db");
+        
+        //   - 저장 결과 변수
+        int inserted = 0;
+        
+        try {
+        	// 저장 실행
+			inserted = DML.insertBlogArticle(mapList);
+			
+			// 저장 결과 출력
+	        if( inserted >= 0 ) {
+	            System.out.println(String.format("데이터 입력 성공: %d건", inserted));
+	        } else {
+	            System.out.println("데이터 입력 실패");
+	        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+        // 결과 반환
+		return inserted;
     }
 }

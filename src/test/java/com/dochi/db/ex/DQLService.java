@@ -12,18 +12,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DQLService extends SQLiteManager {
+public class DQLService extends DBManager {
     
     // 생성자
     public DQLService() {
         
     }
     public DQLService(String url) {
-        super(url);
+        this(url, null, null);
+    }
+    public DQLService(String url, String username, String password) {
+        super(url, username, password);
     }
 
     // 데이터 조회 함수
-    public List<Map<String, Object>> select(Map<String, Object> dataMap){
+    public List<Map<String, Object>> selectBlogArticleList(Map<String, Object> dataMap){
         // 상수설정
         //   - SQL
         final String SQL = "SELECT T1.BLOG_ID           "+"\n"
@@ -38,7 +41,6 @@ public class DQLService extends SQLiteManager {
                          + " WHERE 1=1                  "+"\n"
                          + "   AND T1.BLOG_ID = ?       "+"\n"
                          + "   AND T1.CATE_ID = ?       "+"\n"
-                         + "   AND T1.ATCL_ID = ?       "+"\n"
                          ;
         
         //   - 조회 결과 변수
@@ -47,18 +49,17 @@ public class DQLService extends SQLiteManager {
 
         // 변수설정
         //   - Database 변수
-        Connection _conn = ensureConnection();
+        Connection conn = ensureConnection();
         PreparedStatement pstmt = null;
         ResultSetMetaData meta = null;
         
         try {
             // PreparedStatement 객체 생성
-            pstmt = _conn.prepareStatement(SQL);
+            pstmt = conn.prepareStatement(SQL);
             
             // 조회 데이터 조건 매핑
             pstmt.setObject(1, dataMap.get("BLOG_ID"));
             pstmt.setObject(2, dataMap.get("CATE_ID"));
-            pstmt.setObject(3, dataMap.get("ATCL_ID"));
             
             // 데이터 조회
             ResultSet rs = pstmt.executeQuery();
@@ -89,18 +90,19 @@ public class DQLService extends SQLiteManager {
             System.out.println(e.getMessage());
             
         } finally  {
-            // PreparedStatement 종료
-            if( pstmt != null ) {
-                try {
+            try {
+	            // PreparedStatement 종료
+	            if( pstmt != null ) {
                     pstmt.close();
-                } catch ( SQLException e ) {
-                    e.printStackTrace();
-                }
+	            }
+	            
+	            // Database 연결 종료
+	            closeConnection();
+	            
+            } catch ( SQLException e ) {
+                e.printStackTrace();
             }
         }
-        
-        // 조회 결과 출력
-        printMapList(selected);
 
         // 결과 반환
         //   - 조회된 데이터 리스트
@@ -109,13 +111,22 @@ public class DQLService extends SQLiteManager {
 
     // 조회 결과 출력 함수
     public void printMapList(List<Map<String, Object>> mapList) {
-        mapList.forEach((map)->{
-            final StringBuilder sb = new StringBuilder();
+    	if( mapList.size() == 0 ) {
+    		System.out.println("조회된 데이터가 없습니다.");
+    		return;
+    	}
+    	
+    	// 상세 데이터 출력
+        System.out.println(String.format("데이터 조회 결과: %d건", mapList.size()));
+        
+        for(int i = 1; i <= mapList.size(); i++) {
+        	Map<String, Object> map = mapList.get(i-1);
+        	
+            StringBuilder sb = new StringBuilder();
             
-            Set<Map.Entry<String, Object>> entries = map.entrySet();
-            
-            sb.append("{");
-            entries.forEach(( entry )->{
+            sb.append(i);
+            sb.append(": {");
+            map.entrySet().forEach(( entry )->{
                 sb.append('"')
                     .append(entry.getKey())
                     .append("\": \"")
@@ -125,7 +136,6 @@ public class DQLService extends SQLiteManager {
             sb.append("}");
             
             System.out.println(sb.toString());
-        });
-        
+        }
     }
 }

@@ -6,12 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DDLService extends SQLiteManager {
+public class DDLService extends DBManager {
     // 생성자
     public DDLService() {
+    	
     }
     public DDLService(String url) {
-        super(url);
+        this(url, null, null);
+    }
+    public DDLService(String url, String username, String password) {
+        super(url, username, password);
     }
 
     // SQL 실행 함수
@@ -53,13 +57,17 @@ public class DDLService extends SQLiteManager {
             result = ResultType.FAILURE;
 
         } finally {
-            // Statement 종료
-            if( stmt != null ) {
-                try {
+            try {
+	            // Statement 종료
+	            if( stmt != null ) {
                     stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+	            }
+	            
+	            // Connection 종료
+	            this.closeConnection();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
