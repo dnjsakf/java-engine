@@ -18,8 +18,8 @@ import org.quartz.UnableToInterruptJobException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 
-import com.dochi.db.ex.DDLService;
-import com.dochi.db.ex.DDLService.ResultType;
+import com.dochi.quartz.crawl_db.db.DDLService;
+import com.dochi.quartz.crawl_db.db.DDLService.ResultType;
 
 public class JobLauncher {
 
@@ -38,7 +38,7 @@ public class JobLauncher {
     public static final String MAIN_STEP_JOB_NAME = "mainStepJobName";
     public static final String NEXT_STEP_CLASS_NAME = "nextStepClassName";
     public static final String NEXT_STEP_JOB_NAME = "nextStepJobName";
-    
+
     //   - Database Service 객체 변수
     private final DDLService DDL = new DDLService("jdbc:sqlite:quartz.db");
 
@@ -48,11 +48,12 @@ public class JobLauncher {
 
     // Main 함수
     public static void main(String[] args) throws SchedulerException, SQLException {
+        // Scheduler 실행 객체 생성
     	JobLauncher launcher = new JobLauncher();
-    	
+
     	// 데이터베이스 설정
     	launcher.initDatabase();
-    	
+
         // Scheduler 실행
     	launcher.start();
 
@@ -76,7 +77,7 @@ public class JobLauncher {
         // Scheduler 객체 정의
         factory = new StdSchedulerFactory();
         scheduler = factory.getScheduler();
-        
+
         // Listener 설정
         scheduler.getListenerManager().addJobListener(new JobLogListener());
 
@@ -123,7 +124,7 @@ public class JobLauncher {
         //   - 5분마다 반복, 최대 3회
         SimpleScheduleBuilder schedule = SimpleScheduleBuilder.simpleSchedule()
                                             .withRepeatCount(3)
-                                            .withIntervalInMinutes(5);
+                                            .withIntervalInSeconds(10);
 
         // Trigger 설정
         Trigger trigger = TriggerBuilder.newTrigger()
@@ -135,19 +136,20 @@ public class JobLauncher {
         // Schedule 등록
         scheduler.scheduleJob(jobDetail, trigger);
     }
-    
+
     // 데이터베이스 설정
     private void initDatabase() throws SQLException {
         //DDL.dropTable("CW_BLOG_ATCL_LIST");
-    	
+
     	// 상수 설정
     	//   - 테이블 생성 SQL 변수
         final String SQL = "CREATE TABLE IF NOT EXISTS CW_BLOG_ATCL_LIST (   "+"\n"
                          + "  BLOG_ID     TEXT           NOT NULL,           "+"\n"
                          + "  CATE_ID     TEXT           NOT NULL,           "+"\n"
-                         + "  ATCL_ID     TEXT           NOT NULL,           "+"\n"
+                         + "  ATCL_ID     INTEGER        NOT NULL,           "+"\n"
                          + "  URL         TEXT           NOT NULL,           "+"\n"
                          + "  TITLE       TEXT,                              "+"\n"
+                         + "  PAGE        INTEGER        NOT NULL,           "+"\n"
                          + "  WORK_YN     INTEGER        DEFAULT 0,          "+"\n"
                          + "  REG_DTTM    TEXT,                              "+"\n"
                          + "  UPD_DTTM    TEXT,                              "+"\n"
@@ -168,5 +170,7 @@ public class JobLauncher {
                 System.out.println("테이블 생성 실패.");
                 break;
         }
+
+        DDL.closeConnection();
     }
 }

@@ -1,4 +1,4 @@
-package com.dochi.db.ex;
+package com.dochi.quartz.crawl_db.db;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -6,31 +6,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dochi.db.ex.DDLService.ResultType;
+import com.dochi.quartz.crawl_db.db.DDLService.ResultType;
 
-public class App {
+public class MariaApp {
 
     // 변수 생성
     //   - DDL 객체 변수 ( dochi.db 파일 생성 )
-    private DDLService DDL = new DDLService("jdbc:sqlite:quartz.db");
+    private DDLService DDL = new DDLService("jdbc:mariadb://localhost:3306/DOCHI", "dochi", "dochi");
 
     //   - DML 객체 변수 ( dochi.db 파일 수정 )
-    private DMLService DML = new DMLService("jdbc:sqlite:quartz.db");
+    private DMLService DML = new DMLService("jdbc:mariadb://localhost:3306/DOCHI", "dochi", "dochi");
 
     //   - DQL 객체 변수 ( dochi.db 파일 조회 )
-    private DQLService DQL = new DQLService("jdbc:sqlite:quartz.db");
+    private DQLService DQL = new DQLService("jdbc:mariadb://localhost:3306/DOCHI", "dochi", "dochi");
 
     // 테이블 생성 함수
     public void createTable() throws SQLException {
         final String SQL = "CREATE TABLE IF NOT EXISTS CW_BLOG_ATCL_LIST (   "+"\n"
-                         + "  BLOG_ID     TEXT           NOT NULL,           "+"\n"
-                         + "  CATE_ID     TEXT           NOT NULL,           "+"\n"
-                         + "  ATCL_ID     TEXT           NOT NULL,           "+"\n"
-                         + "  URL         TEXT           NOT NULL,           "+"\n"
-                         + "  TITLE       TEXT,                              "+"\n"
+                         + "  BLOG_ID     VARCHAR(100)   NOT NULL,           "+"\n"
+                         + "  CATE_ID     VARCHAR(50)    NOT NULL,           "+"\n"
+                         + "  ATCL_ID     VARCHAR(50)    NOT NULL,           "+"\n"
+                         + "  URL         VARCHAR(500)   NOT NULL,           "+"\n"
+                         + "  TITLE       VARCHAR(500),                      "+"\n"
                          + "  WORK_YN     INTEGER        DEFAULT 0,          "+"\n"
-                         + "  REG_DTTM    TEXT,                              "+"\n"
-                         + "  UPD_DTTM    TEXT,                              "+"\n"
+                         + "  REG_DTTM    VARCHAR(14),                       "+"\n"
+                         + "  UPD_DTTM    VARCHAR(14),                       "+"\n"
                          + "  PRIMARY KEY (BLOG_ID, CATE_ID, ATCL_ID)       )";
 
         // 테이블 생성
@@ -189,21 +189,21 @@ public class App {
     }
 
     public static void main(String[] args) throws SQLException {
-        App db = new App();
+        MariaApp db = new MariaApp();
 
-//        db.dropTable();   	// 테이블 삭제
-//        db.createTable();   // 테이블 생성
-//
-//        db.insert();		// 데이터 입력
-//        db.select();		// 데이터 조회
-//
-//        db.update();		// 데이터 수정
-//        db.select();		// 데이터 조회
-//
-//        db.delete();		// 데이터 삭제
-//        db.select();		// 데이터 조회
-//
-//        db.insertList();	// 다중 데이터 입력
+        db.dropTable();   	// 테이블 삭제
+        db.createTable();   // 테이블 생성
+
+        db.insert();		// 데이터 입력
+        db.select();		// 데이터 조회
+
+        db.update();		// 데이터 수정
+        db.select();		// 데이터 조회
+
+        db.delete();		// 데이터 삭제
+        db.select();		// 데이터 조회
+
+        db.insertList();	// 다중 데이터 입력
         db.select();		// 데이터 조회
     }
 }

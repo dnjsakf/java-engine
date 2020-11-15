@@ -1,4 +1,4 @@
-package com.dochi.db.ex;
+package com.dochi.quartz.crawl_db.db;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class DDLService extends DBManager {
     // 생성자
     public DDLService() {
-
+    	
     }
     public DDLService(String url) {
         this(url, null, null);
@@ -62,9 +62,9 @@ public class DDLService extends DBManager {
 	            if( stmt != null ) {
                     stmt.close();
 	            }
-
+	            
 	            // Connection 종료
-	            closeConnection();
+	            this.closeConnection();
 
             } catch (SQLException e) {
                 e.printStackTrace();

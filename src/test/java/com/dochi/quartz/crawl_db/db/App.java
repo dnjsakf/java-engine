@@ -1,4 +1,4 @@
-package com.dochi.db.ex;
+package com.dochi.quartz.crawl_db.db;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dochi.db.ex.DDLService.ResultType;
+import com.dochi.quartz.crawl_db.db.DDLService.ResultType;
 
 public class App {
 
@@ -25,9 +25,10 @@ public class App {
         final String SQL = "CREATE TABLE IF NOT EXISTS CW_BLOG_ATCL_LIST (   "+"\n"
                          + "  BLOG_ID     TEXT           NOT NULL,           "+"\n"
                          + "  CATE_ID     TEXT           NOT NULL,           "+"\n"
-                         + "  ATCL_ID     TEXT           NOT NULL,           "+"\n"
+                         + "  ATCL_ID     INTEGER        OT NULL,            "+"\n"
                          + "  URL         TEXT           NOT NULL,           "+"\n"
                          + "  TITLE       TEXT,                              "+"\n"
+                         + "  PAGE        INTEGER,                           "+"\n"
                          + "  WORK_YN     INTEGER        DEFAULT 0,          "+"\n"
                          + "  REG_DTTM    TEXT,                              "+"\n"
                          + "  UPD_DTTM    TEXT,                              "+"\n"
@@ -87,6 +88,7 @@ public class App {
         dataMap.put("ATCL_ID"   , "0");
         dataMap.put("URL"       , "https://heodolf.tistory.com/134");
         dataMap.put("TITLE"     , "[JAVA] Quartz 스케줄러 만들기 (1) - 실행");
+        dataMap.put("PAGE"      , 99);
         dataMap.put("WORK_YN"   , 0);
 
         // 데이터 입력
@@ -110,6 +112,7 @@ public class App {
         dataMap1.put("ATCL_ID"   , "0");
         dataMap1.put("URL"       , "https://heodolf.tistory.com/134");
         dataMap1.put("TITLE"     , "[JAVA] Quartz 스케줄러 만들기 (1) - 실행");
+        dataMap1.put("PAGE"      , 99);
         dataMap1.put("WORK_YN"   , 0);
         dataMapList.add(dataMap1);
 
@@ -119,6 +122,7 @@ public class App {
         dataMap2.put("ATCL_ID"   , "1");
         dataMap2.put("URL"       , "https://heodolf.tistory.com/135");
         dataMap2.put("TITLE"     , "[JAVA] Quartz 스케줄러 만들기 (2) - Listener");
+        dataMap2.put("PAGE"      , 99);
         dataMap2.put("WORK_YN"   , 0);
         dataMapList.add(dataMap2);
 
@@ -188,11 +192,26 @@ public class App {
         }
     }
 
+    // 데이터 조회 함수
+    public void getLastArticle() {
+        // 상수 설정
+        //   - 조회할 데이터
+        final Map<String, Object> dataMap = new HashMap<String, Object>();
+        dataMap.put("BLOG_ID"   , "heodolf.tistory.com");
+        dataMap.put("CATE_ID"   , "/");
+
+        // 데이터 조회
+        //   - 수집한 블로그 목록 조
+        Map<String, Object> result = DQL.getLastArticle(dataMap);
+
+        System.out.println( result );
+    }
+
     public static void main(String[] args) throws SQLException {
         App db = new App();
 
-//        db.dropTable();   	// 테이블 삭제
-//        db.createTable();   // 테이블 생성
+        db.dropTable();   	// 테이블 삭제
+        db.createTable();   // 테이블 생성
 //
 //        db.insert();		// 데이터 입력
 //        db.select();		// 데이터 조회
@@ -203,7 +222,11 @@ public class App {
 //        db.delete();		// 데이터 삭제
 //        db.select();		// 데이터 조회
 //
+//        db.getLastArticle();
+//
 //        db.insertList();	// 다중 데이터 입력
-        db.select();		// 데이터 조회
+//        db.select();		// 데이터 조회
+
+        db.getLastArticle();
     }
 }
