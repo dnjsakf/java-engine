@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapper>
+
+  <sql id="selectDateTime">
+    SELECT strftime('%Y-%m-%d %H:%M:%S', datetime('now')) AS DATE_TIME
+         , #{testValue} AS TEST_VALUE 
+  </sql>
+  <sql id="selectDate">
+    SELECT strftime('%Y-%m-%d', datetime('now')) AS DATE_TIME
+         , #{testValue} AS TEST_VALUE 
+         , #{testValue} AS TEST_VALUE 
+  </sql>
+  
+</mapper>
